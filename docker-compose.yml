@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  docker-host-exporter:
+    image: docker-host-exporter
+    #??hostname??
+    container_name: docker-host-exporter
+    restart: always
+
+  timescaledb:
+    image: timescale/timescaledb:1.7.1-pg12-oss
+    container_name: timescaledb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "{$POSTGRES_PASSWORD}"
+    volumes:
+      - "${MONITORING_DATA_LOCATION}/timescaledb:/var/lib/postgresql/data"
+    restart: always
+
+  grafana:
+    image: grafana/grafana:7.0.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: always
+
+  release-manager:
+    image: release-manager
+    container_name: release-manager
+    restart: always
