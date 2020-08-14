@@ -1,26 +1,22 @@
 CREATE SCHEMA IF NOT EXISTS monitoring AUTHORIZATION postgres;
 
-CREATE TABLE monitoring.hosts (
+CREATE TABLE IF NOT EXISTS monitoring.hosts (
     time                TIMESTAMPTZ     NOT NULL,
     hostname            TEXT            NOT NULL,
     environment         TEXT            NULL,
     os                  TEXT            NULL,
-    total_cpu           SMALLINT        NULL,
-    total_memory        DECIMAL(4,2)    NULL,
+    uptime              TEXT            NULL,
+    total_cpu           TEXT            NULL,
+    total_memory        TEXT            NULL,
     cpu_usage           DECIMAL(4,2)    NULL,
     memory_usage        DECIMAL(4,2)    NULL,
     disk_usage          DECIMAL(4,2)    NULL,
     containers_running  SMALLINT        NULL,
-    containers_stopped  SMALLINT        NULL,
-    docker_cpus         SMALLINT        NULL,
-    docker_memory       DECIMAL(4,2)    NULL
+    containers_stopped  SMALLINT        NULL
 );
-
 SELECT create_hypertable('monitoring.hosts', 'time');
 
-
-
-CREATE TABLE monitoring.containers (
+CREATE TABLE IF NOT EXISTS monitoring.containers (
     time                TIMESTAMPTZ     NOT NULL,
     name                TEXT            NOT NULL,
     image               TEXT            NULL,
@@ -29,5 +25,4 @@ CREATE TABLE monitoring.containers (
     mounts              SMALLINT        NULL,
     networks            TEXT            NULL
 );
-
 SELECT create_hypertable('monitoring.containers', 'time');

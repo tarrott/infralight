@@ -1,20 +1,38 @@
 version: '3.7'
 services:
-  docker-host-exporter:
-    image: docker-host-exporter
-    #??hostname??
-    container_name: docker-host-exporter
-    restart: always
+  host-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.exporter
+    container_name: host-exporter
+    environment:
+      ENV: "${ENV}"
+      HOSTNAME: "${HOSTNAME}"
+      DOCKER: "${DOCKER}"
+      DISK_PATHS: "${DISK_PATHS}"
+      TSDB_HOST: "${TSDB_HOST}"
+      TSDB_PORT: "${TSDB_PORT}"
+      TSDB_DB: "${TSDB_DB}"
+      TSDB_USER: "${TSDB_USER}"
+      TSDB_PASSWD: "${TSDB_PASSWD}"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
 
   timescaledb:
-    image: timescale/timescaledb:1.7.1-pg12-oss
+    build:
+      context: .
+      dockerfile: Dockerfile.timescaledb
     container_name: timescaledb
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: "{$POSTGRES_PASSWORD}"
+      POSTGRES_PASSWORD: "${TSDB_PASSWD}"
     volumes:
-      - "${MONITORING_DATA_LOCATION}/timescaledb:/var/lib/postgresql/data"
+      - type: volume
+        source: infralight_dbdata
+        target: /var/lib/postgresql/data
     restart: always
 
   grafana:
@@ -28,3 +46,6 @@ services:
     image: release-manager
     container_name: release-manager
     restart: always
+
+volumes:
+  infralight_dbdata:
