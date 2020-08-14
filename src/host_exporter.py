@@ -120,7 +120,6 @@ def main():
     resource_usage = get_resource_usage()
     paths = get_paths()
     disk_usage = get_disk_usage(paths)
-    print(disk_usage)
 
     container_data = {}
     if config.host['docker'] != None:
