@@ -83,6 +83,7 @@ def get_container_details(docker_host):
 
 
 def update_database(host_details, resource_usage, disk_usage, container_data):
+    connection = False
     try:
         connection = psycopg2.connect(host = config.database['host'],
                                       port = config.database['port'],
