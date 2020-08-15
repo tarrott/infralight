@@ -1,0 +1,6 @@
+.env
+/.venv
+/.vscode
+/timescaledb
+__pycache__
+ref

@@ -1,0 +1,53 @@
+version: '3.7'
+services:
+  host-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.exporter
+    container_name: host-exporter
+    environment:
+      ENV: "${ENV}"
+      HOSTNAME: "${HOSTNAME}"
+      DOCKER: "${DOCKER}"
+      DISK_PATHS: "${DISK_PATHS}"
+      TSDB_HOST: "${TSDB_HOST}"
+      TSDB_PORT: "${TSDB_PORT}"
+      TSDB_DB: "${TSDB_DB}"
+      TSDB_USER: "${TSDB_USER}"
+      TSDB_PASSWD: "${TSDB_PASSWD}"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+
+  timescaledb:
+    build:
+      context: .
+      dockerfile: Dockerfile.timescaledb
+    container_name: timescaledb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "${TSDB_PASSWD}"
+    volumes:
+      - type: volume
+        source: infralight_dbdata
+        target: /var/lib/postgresql/data
+    restart: always
+
+  grafana:
+    image: grafana/grafana:7.0.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      VIRTUAL_HOST: "grafana.timothyarrott.com"
+    restart: always
+
+  release-manager:
+    image: release-manager
+    container_name: release-manager
+    restart: always
+
+volumes:
+  infralight_dbdata:

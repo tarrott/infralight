@@ -1,0 +1,3 @@
+FROM timescale/timescaledb:1.7.2-pg12-oss
+
+COPY ./src/create_tables.sql /docker-entrypoint-initdb.d/
